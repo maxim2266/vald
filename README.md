@@ -58,7 +58,8 @@ user-provided functions with matching signature and suitable behaviour.
 
 The main type is `Validator`, which is a function `func(Getter, Consumer) error`, and it is the one
 that does the actual validation of one or more parameters. The package provides a number of constructors
-for the functions of this type, in particular (see `go doc` for more details):
+for the functions of this type, in particular (see [documetation](https://godoc.org/github.com/maxim2266/vald)
+for more details):
 - `Pack` takes a variable list of other validators and constructs a single validator that when called invokes
 	its arguments one by one in the order of specification;
 - `Req` constructs a validator for a parameter with the given name and checker function that returns
@@ -74,7 +75,8 @@ for the functions of this type, in particular (see `go doc` for more details):
 All the above constructors (except `Pack`) take at least two parameters: parameter name as a string, and
 a function of type `Checker` with the signature `func(string) (string, error)`.
 The function receives a value of a parameter and returns the same (or overwritten) value, or an error. There
-is a number of `Checker` constructors provided, like `Regex` or `OneOf`, see documentation for more details.
+is a number of `Checker` constructors provided, like `Regex` or `OneOf`, see
+[documetation](https://godoc.org/github.com/maxim2266/vald) for more details.
 
 Each `Validator` function takes two parameters. The first one is `Getter` of type `func(string) string`. This
 function is expected to return either the value associated with the given parameter name, or an empty
