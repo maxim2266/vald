@@ -27,7 +27,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /*
-Package vald encapsulates and drives validation logic for inputs like HTTP form data.
+Package vald encapsulates and drives validation logic for inputs like HTML form data.
 
 Consider a web server with many HTML pages, each containing a form which is then POSTed back to the server.
 Validating each parameter of each form usually results in a number of functions with spaghetti code that is
