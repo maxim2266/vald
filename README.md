@@ -4,7 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/maxim2266/vald)](https://goreportcard.com/report/github.com/maxim2266/vald)
 [![License: BSD 3 Clause](https://img.shields.io/badge/License-BSD_3--Clause-yellow.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
-Package `vald` encapsulates and drives validation logic for inputs like HTTP form data.
+Package `vald` encapsulates and drives validation logic for inputs like HTML form data.
 
 ### Purpose
 Consider a web server with many HTML pages, each containing a form which is then POSTed back to the server.
