@@ -49,7 +49,7 @@ type Error struct {
 }
 
 // Error composes a human-readable error string.
-func (err Error) Error() string {
+func (err *Error) Error() string {
 	msg := "parameter " + strconv.Quote(err.Param) + ": " + err.Err.Error()
 
 	if len(err.Value) > 0 {
@@ -57,6 +57,11 @@ func (err Error) Error() string {
 	}
 
 	return msg
+}
+
+// Unwrap extracts wrapped error.
+func (err *Error) Unwrap() error {
+	return err.Err
 }
 
 var (
@@ -122,7 +127,7 @@ func Req(key string, check Checker) Validator {
 			return doCheck(key, val, check, cons)
 		}
 
-		return Error{Param: key, Err: errMissingValue}
+		return &Error{Param: key, Err: errMissingValue}
 	}
 }
 
@@ -178,7 +183,7 @@ func doCheck(key, val string, check Checker, cons Consumer) error {
 	v, err := check(val)
 
 	if err != nil {
-		return Error{key, val, err}
+		return &Error{key, val, err}
 	}
 
 	return cons(key, v)
