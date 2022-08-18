@@ -42,6 +42,28 @@ import (
 	"strconv"
 )
 
+// Error is a type to represent validation error.
+type Error struct {
+	Param, Value string
+	Err          error
+}
+
+// Error composes a human-readable error string.
+func (err Error) Error() string {
+	msg := "parameter " + strconv.Quote(err.Param) + ": " + err.Err.Error()
+
+	if len(err.Value) > 0 {
+		msg += ": " + strconv.Quote(err.Value)
+	}
+
+	return msg
+}
+
+var (
+	errMissingValue = errors.New("missing value")
+	errInvalidValue = errors.New("invalid value")
+)
+
 // Getter is the type of function that given a key returns its corresponding value, or an empty string
 // if the key is not found.
 // Typically, the getter is one of:
@@ -100,7 +122,7 @@ func Req(key string, check Checker) Validator {
 			return doCheck(key, val, check, cons)
 		}
 
-		return errors.New("missing key: " + strconv.Quote(key))
+		return Error{Param: key, Err: errMissingValue}
 	}
 }
 
@@ -152,12 +174,14 @@ func Cond(key string, check Checker, yes, no Validator) Validator {
 	}
 }
 
-func doCheck(key, val string, check Checker, cons Consumer) (err error) {
-	if val, err = check(val); err != nil {
-		return errors.New("invalid value for key " + strconv.Quote(key) + ": " + err.Error())
+func doCheck(key, val string, check Checker, cons Consumer) error {
+	v, err := check(val)
+
+	if err != nil {
+		return Error{key, val, err}
 	}
 
-	return cons(key, val)
+	return cons(key, v)
 }
 
 // OneOf constructs a Checker function that attempts to find its argument in the given list of
@@ -179,7 +203,7 @@ func OneOf(literals ...string) Checker {
 
 	return func(val string) (s string, err error) {
 		if s = m[val]; len(s) == 0 {
-			err = errors.New(strconv.Quote(val))
+			err = errInvalidValue
 		}
 
 		return
@@ -195,7 +219,7 @@ func Regex(patt string) Checker {
 			return val, nil
 		}
 
-		return "", errors.New(strconv.Quote(val))
+		return "", errInvalidValue
 	}
 }
 
@@ -214,11 +238,12 @@ func Bool(val string) (string, error) {
 
 // map error returned from strconv.Parse* family of functions.
 func mapNumErr(val string, err error) error {
-	if e, ok := err.(*strconv.NumError); ok {
-		err = e.Err
+	switch err := err.(type) {
+	case *strconv.NumError:
+		return err.Err
+	default:
+		return err
 	}
-
-	return errors.New(strconv.Quote(val) + ": " + err.Error())
 }
 
 // FromMap is a convenience function that constructs a Getter from the given Go map.

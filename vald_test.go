@@ -74,22 +74,22 @@ func TestErrors(t *testing.T) {
 		"aaa": {
 			Req("aaa", OneOf("xxx", "yyy", "zzz")),
 			"XXX",
-			"invalid value for key \"aaa\": \"XXX\"",
+			`parameter "aaa": invalid value: "XXX"`,
 		},
 		"bbb": {
 			Req("bbb", Regex(`^[a-z]{3}$`)),
 			"XXX",
-			"invalid value for key \"bbb\": \"XXX\"",
+			`parameter "bbb": invalid value: "XXX"`,
 		},
 		"isOK": {
 			Req("isOK", Bool),
 			"XXX",
-			"invalid value for key \"isOK\": \"XXX\": invalid syntax",
+			`parameter "isOK": invalid syntax: "XXX"`,
 		},
 		"missing": {
 			Req("ddd", Bool),
 			"xxx",
-			"missing key: \"ddd\"",
+			`parameter "ddd": missing value`,
 		},
 	}
 
