@@ -49,19 +49,19 @@ type Error struct {
 }
 
 // Error composes a human-readable error string.
-func (err *Error) Error() string {
-	msg := "parameter " + strconv.Quote(err.Param) + ": " + err.Err.Error()
+func (e *Error) Error() (msg string) {
+	msg = "parameter " + strconv.Quote(e.Param) + ": " + e.Err.Error()
 
-	if len(err.Value) > 0 {
-		msg += ": " + strconv.Quote(err.Value)
+	if len(e.Value) > 0 {
+		msg += ": " + strconv.Quote(e.Value)
 	}
 
-	return msg
+	return
 }
 
 // Unwrap extracts wrapped error.
-func (err *Error) Unwrap() error {
-	return err.Err
+func (e *Error) Unwrap() error {
+	return e.Err
 }
 
 var (
@@ -86,16 +86,14 @@ type Validator func(Getter, Consumer) error
 
 // Map invokes the validator using the given getter function and returns a map of validated data,
 // or an error.
-func (validate Validator) Map(get Getter) (map[string]string, error) {
-	r := make(map[string]string)
+func (validate Validator) Map(get Getter) (m map[string]string, err error) {
+	m = make(map[string]string)
 
-	cons := func(k, v string) error { r[k] = v; return nil }
-
-	if err := validate(get, cons); err != nil {
-		return nil, err
+	if err = validate(get, func(k, v string) error { m[k] = v; return nil }); err != nil {
+		m = nil
 	}
 
-	return r, nil
+	return
 }
 
 // Pack constructs a new validator that when called invokes the given validators one by one.
